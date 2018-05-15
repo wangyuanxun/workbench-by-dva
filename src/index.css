@@ -1,0 +1,17 @@
+html, body, :global(#root) {
+  height: 100%;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:global(.ant-layout) {
+  min-height: 100%;
+}
+
+:global .ant-spin-container {
+    overflow: visible !important;
+}
