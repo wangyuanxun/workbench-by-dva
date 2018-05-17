@@ -2,7 +2,7 @@ import React from 'react'
 import { Form, Input, Icon, Checkbox, Button } from 'antd'
 import { connect } from 'dva'
 import { Link } from 'dva/router'
-import styles from './login.less'
+import styles from './Login.less'
 import logo from '../../assets/images/logo.svg'
 import config from '../../utils/config'
 
@@ -72,6 +72,6 @@ class Login extends React.Component {
     }
 }
 
-const loginForm = Form.create()(Login);
+const LoginForm = Form.create()(Login);
 
-export default connect()(loginForm)
+export default connect()(LoginForm)
