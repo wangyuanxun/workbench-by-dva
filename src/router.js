@@ -2,7 +2,7 @@ import { Router, Route, Switch } from 'dva/router'
 import dynamic from 'dva/dynamic'
 
 const routerConfig = ({ history, app }) => {
-  const BaseLayout = dynamic({ app, component: () => import('./components/layout/baseLayout') })
+  const BaseLayout = dynamic({ app, models: () => [import('./models/sys/sys')], component: () => import('./components/layout/baseLayout') })
   const Login = dynamic({ app, models: () => [import('./models/account/login')], component: () => import('./routes/account/login') })
   const Exception404 = dynamic({ app, component: () => import('./routes/exception/404') })
   const Exception500 = dynamic({ app, component: () => import('./routes/exception/500') })

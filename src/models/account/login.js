@@ -9,6 +9,7 @@ export default {
         *login({ payload }, { put, call }) {
             const response = yield call(login, payload)
             if (response.code === 1) {
+                localStorage.setItem("TOKEN", response.TOKEN)
                 yield put(routerRedux.push('/'))
             } else {
                 message.error(response.message)

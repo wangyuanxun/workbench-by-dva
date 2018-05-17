@@ -6,7 +6,7 @@ import config from './config'
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
-    return response;
+    return response.json();
   }
 
   let [status, msg] = [response.status, response.statusText || '系统异常']
@@ -21,14 +21,13 @@ function checkStatus(response) {
   throw error;
 }
 
-function parseJSON(response) {
-  const json = response.json();
+function checkLogin(response) {
   const { dispatch } = store;
-  if (json.code === config.sys.logout_code) {
+  if (response.code === config.sys.logout_code) {
     dispatch(routerRedux.push('/account/logout'))
     return;
   }
-  return json;
+  return response;
 }
 
 function catchExption(err) {
@@ -62,23 +61,24 @@ export default function request(url, options) {
   }
   const newOption = { ...defaultOptions, ...options }
   if (newOption.method === 'POST') {
-    if (!(options.body instanceof FormData)) {
+    if (newOption.body && !(newOption.body instanceof FormData)) {
       newOption.headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
+        'TOKEN': localStorage.getItem('TOKEN'),
         ...newOption.headers
       }
       newOption.body = JSON.stringify(newOption.body)
     } else {
       newOption.headers = {
         Accept: 'application/json',
+        'TOKEN': localStorage.getItem('TOKEN'),
         ...newOption.headers
       }
     }
   }
   return fetch(url, newOption)
     .then(checkStatus)
-    .then(parseJSON)
-    .then(data => data)
+    .then(checkLogin)
     .catch(catchExption);
 }
