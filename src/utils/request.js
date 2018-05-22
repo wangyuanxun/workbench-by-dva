@@ -38,12 +38,11 @@ function catchExption(err) {
   }
   if (status >= 404 && status < 422) {
     dispatch(routerRedux.push('/exception/404'))
-    return error_response;
   }
   if (status >= 500 && status <= 504) {
     dispatch(routerRedux.push('/exception/500'))
-    return error_response;
   }
+  return error_response;
 }
 
 /**
