@@ -37,10 +37,10 @@ class Login extends React.Component {
                         <div className={styles.header}>
                             <Link to='/'>
                                 <img className={styles.logo} src={logo} alt='logo' />
-                                <span className={styles.title}>{config.sys.name}</span>
+                                <span className={styles.title}>{config.name}</span>
                             </Link>
                         </div>
-                        <div className={styles.desc}>{config.sys.desc}</div>
+                        <div className={styles.desc}>{config.desc}</div>
                     </div>
                     <div className={styles.main}>
                         <Form onSubmit={this.handleSubmit}>

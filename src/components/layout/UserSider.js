@@ -35,7 +35,7 @@ class UserSider extends React.Component {
             <Sider trigger={null} collapsible={true} collapsed={this.props.collapsed}>
                 <div className={styles.logo}>
                     <img src={logo} alt='logo' />
-                    <h1>{config.sys.name}</h1>
+                    <h1>{config.name}</h1>
                 </div>
                 <Menu theme="dark" mode="inline">
                     {this.initMenu(menuData, true)}

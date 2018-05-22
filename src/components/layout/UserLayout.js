@@ -1,6 +1,6 @@
 import React from 'react'
 import DocumentTitle from 'react-document-title'
-import { Layout} from 'antd'
+import { Layout } from 'antd'
 import { connect } from 'dva';
 import UserHeader from './UserHeader'
 import UsereSider from './UserSider'
@@ -13,29 +13,51 @@ class UserLayout extends React.Component {
         collapsed: false
     }
 
-    collapsedChange = () => {
+    collapsedChange() {
         this.setState({ collapsed: !this.state.collapsed })
     }
 
+    noLayout(path) {
+        let no_layout = false;
+        for (var i = 0; i < config.no_layout_url.length; i++) {
+            if (config.no_layout_url[i] === path) {
+                no_layout = true;
+                break;
+            }
+        }
+        return no_layout;
+    }
+
     render() {
-        let menuData  = this.props.sys.menuData
-        return (
-            <DocumentTitle title={config.sys.name}>
+        let { location } = this.props;
+        let menuData = this.props.sys.menuData
+        let userLayout = !this.noLayout(location.pathname) ?
+            <Layout>
+                <UsereSider collapsed={this.state.collapsed} data={menuData} />
                 <Layout>
-                    <UsereSider collapsed={this.state.collapsed} data={menuData} />
-                    <Layout>
-                        <UserHeader collapsed={this.state.collapsed} collapsedChange={this.collapsedChange} />
-                        <Content></Content>
-                    </Layout>
+                    <UserHeader collapsed={this.state.collapsed} collapsedChange={this.collapsedChange} />
+                    <Content>
+                        {this.props.children}
+                    </Content>
                 </Layout>
+            </Layout> :
+            <Layout>
+                {this.props.children}
+            </Layout>;
+        return (
+            <DocumentTitle title={config.name}>
+                {userLayout}
             </DocumentTitle>
         )
     }
 
     componentDidMount() {
-        this.props.dispatch({
-            type: 'sys/getMenuList'
-        })
+        let { location } = this.props;
+        if (!this.noLayout(location.pathname)) {
+            this.props.dispatch({
+                type: 'sys/getMenuList'
+            })
+        }
     }
 }
 

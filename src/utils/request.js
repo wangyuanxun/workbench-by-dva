@@ -23,9 +23,8 @@ function checkStatus(response) {
 
 function checkLogin(response) {
   const { dispatch } = store;
-  if (response.code === config.sys.logout_code) {
-    dispatch(routerRedux.push('/account/logout'))
-    return;
+  if (response.code === config.logout_code) {
+    dispatch(routerRedux.push('/account/login'))
   }
   return response;
 }
@@ -33,17 +32,17 @@ function checkLogin(response) {
 function catchExption(err) {
   const { status } = err;
   const { dispatch } = store;
-  if (status === 403) {
-    dispatch(routerRedux.push('/exption/404'))
-    return;
+  let error_response = {
+    code: 0,
+    message: '系统出错'
   }
   if (status >= 404 && status < 422) {
-    dispatch(routerRedux.push('/exption/404'))
-    return;
+    dispatch(routerRedux.push('/exception/404'))
+    return error_response;
   }
   if (status >= 500 && status <= 504) {
-    dispatch(routerRedux.push('/exption/404'))
-    return;
+    dispatch(routerRedux.push('/exception/500'))
+    return error_response;
   }
 }
 
