@@ -4,7 +4,7 @@ import { login } from '../../services/account/login'
 
 export default {
     namespace: 'account',
-    state: null,
+    state: {},
     effects: {
         *login({ payload }, { put, call }) {
             const response = yield call(login, payload)

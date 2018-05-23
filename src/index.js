@@ -1,9 +1,14 @@
 import dva from 'dva'
+import { createHashHistory } from 'history'
 import createLoading from 'dva-loading'
 import './index.less'
 
 // 1. Initialize
-const app = dva();
+const app = dva({
+    history: createHashHistory({
+        hashType: 'slash'
+    })
+});
 
 // 2. Plugins
 app.use(createLoading());
