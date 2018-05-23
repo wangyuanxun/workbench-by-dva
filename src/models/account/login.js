@@ -15,5 +15,14 @@ export default {
                 message.error(response.message)
             }
         }
+    },
+    subscriptions: {
+        setup({ dispatch, history }) {
+            history.listen(({ pathname }) => {
+                if (pathname === '/account/login' && localStorage.getItem('TOKEN')) {
+                    dispatch(routerRedux.push('/'))
+                }
+            })
+        }
     }
 }
