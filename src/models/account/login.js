@@ -7,12 +7,13 @@ export default {
     state: {},
     effects: {
         *login({ payload }, { put, call }) {
-            const response = yield call(login, payload)
+            const response = yield call(login, payload);
             if (response.code === 1) {
-                localStorage.setItem("TOKEN", response.TOKEN)
-                yield put(routerRedux.push('/'))
+                localStorage.setItem("TOKEN", response.TOKEN);
+                localStorage.setItem("REAL_NAME", response.real_name);
+                yield put(routerRedux.push('/'));
             } else {
-                message.error(response.message)
+                message.error(response.message);
             }
         }
     },
@@ -20,7 +21,7 @@ export default {
         setup({ dispatch, history }) {
             history.listen(({ pathname }) => {
                 if (pathname === '/account/login' && localStorage.getItem('TOKEN')) {
-                    dispatch(routerRedux.push('/'))
+                    dispatch(routerRedux.push('/'));
                 }
             })
         }

@@ -9,7 +9,7 @@ function checkStatus(response) {
     return response.json();
   }
 
-  let [status, msg] = [response.status, response.statusText || '系统异常']
+  let [status, msg] = [response.status, response.statusText || '系统异常'];
 
   notification.error({
     message: '请求错误',
@@ -24,7 +24,9 @@ function checkStatus(response) {
 function checkLogin(response) {
   const { dispatch } = store;
   if (response.code === config.logout_code) {
-    dispatch(routerRedux.push('/account/login'))
+    localStorage.removeItem('TOKEN');
+    localStorage.removeItem('REAL_NAME');
+    dispatch(routerRedux.push('/account/login'));
   }
   return response;
 }
@@ -37,10 +39,10 @@ function catchExption(err) {
     message: '系统出错'
   }
   if (status >= 404 && status < 422) {
-    dispatch(routerRedux.push('/exception/404'))
+    dispatch(routerRedux.push('/exception/404'));
   }
   if (status >= 500 && status <= 504) {
-    dispatch(routerRedux.push('/exception/500'))
+    dispatch(routerRedux.push('/exception/500'));
   }
   return error_response;
 }
@@ -66,7 +68,7 @@ export default function request(url, options) {
         'TOKEN': localStorage.getItem('TOKEN'),
         ...newOption.headers
       }
-      newOption.body = JSON.stringify(newOption.body)
+      newOption.body = JSON.stringify(newOption.body);
     } else {
       newOption.headers = {
         Accept: 'application/json',

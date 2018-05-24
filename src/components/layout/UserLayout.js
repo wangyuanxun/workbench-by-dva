@@ -21,7 +21,7 @@ class UserLayout extends React.Component {
     }
 
     collapsedChange() {
-        this.setState({ collapsed: !this.state.collapsed })
+        this.setState({ collapsed: !this.state.collapsed });
     }
 
     menuSelectHandle(key) {
@@ -41,18 +41,22 @@ class UserLayout extends React.Component {
         let { location } = this.props,
             menuData = this.props.sys.menuData;
         let userLayout = !noLayout(location.pathname) ?
-            <Layout>
-                <UsereSider collapsed={this.state.collapsed} data={menuData} menuSelect={this.menuSelectHandle} />
+            (
                 <Layout>
-                    <UserHeader collapsed={this.state.collapsed} collapsedChange={this.collapsedChange} />
-                    <Content>
-                        {this.props.children}
-                    </Content>
+                    <UsereSider collapsed={this.state.collapsed} data={menuData} menuSelect={this.menuSelectHandle} />
+                    <Layout>
+                        <UserHeader collapsed={this.state.collapsed} collapsedChange={this.collapsedChange} />
+                        <Content>
+                            {this.props.children}
+                        </Content>
+                    </Layout>
                 </Layout>
-            </Layout> :
-            <Layout>
-                {this.props.children}
-            </Layout>;
+            ) :
+            (
+                <Layout>
+                    {this.props.children}
+                </Layout>
+            );
         return (
             <DocumentTitle title={config.name}>
                 {userLayout}

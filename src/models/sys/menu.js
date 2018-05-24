@@ -9,16 +9,16 @@ export default {
     },
     reducers: {
         load(state, { payload }) {
-            return { ...state, menuData: payload }
+            return { ...state, menuData: payload };
         }
     },
     effects: {
         *getMenuList({ payload }, { put, call }) {
-            const response = yield call(getMenuList)
+            const response = yield call(getMenuList);
             if (response.code === 1) {
-                yield put({ type: 'load', payload: response.data })
+                yield put({ type: 'load', payload: response.data || [] });
             } else {
-                message.error(response.message)
+                message.error(response.message);
             }
         }
     },
