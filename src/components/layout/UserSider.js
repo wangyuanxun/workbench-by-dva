@@ -7,26 +7,35 @@ import logo from '../../assets/images/logo.svg'
 const { Sider } = Layout
 
 class UserSider extends React.Component {
-    initMenu(data, showIcon) {
+    constructor(props) {
+        super(props)
+        this.menuSelect = this.menuSelect.bind(this);
+    }
+
+    initMenu(data, parentId) {
         let defaultIcon = 'profile';
         return (
             data.map((item) => {
                 if (item.children && item.children.length > 0) {
                     return (
-                        <Menu.SubMenu key={item.id} title={<span><Icon type={item.menuIcon || defaultIcon} /><span>{item.menuName}</span></span>}>
-                            {this.initMenu(item.children, false)}
+                        <Menu.SubMenu key={parentId + item.id} title={<span><Icon type={item.menuIcon || defaultIcon} /><span>{item.menuName}</span></span>}>
+                            {this.initMenu(item.children, parentId + item.id + '_')}
                         </Menu.SubMenu>
                     )
                 } else {
                     return (
-                        <Menu.Item key={item.id}>
-                            {showIcon && <Icon type={item.menuIcon || defaultIcon} />}
+                        <Menu.Item key={parentId + item.id}>
+                            {!parentId && <Icon type={item.menuIcon || defaultIcon} />}
                             <span>{item.menuName}</span>
                         </Menu.Item>
                     )
                 }
             })
         )
+    }
+
+    menuSelect({ key }) {
+        this.props.menuSelect(key);
     }
 
     render() {
@@ -37,8 +46,8 @@ class UserSider extends React.Component {
                     <img src={logo} alt='logo' />
                     <h1>{config.name}</h1>
                 </div>
-                <Menu theme="dark" mode="inline">
-                    {this.initMenu(menuData, true)}
+                <Menu theme="dark" mode="inline" onSelect={this.menuSelect}>
+                    {this.initMenu(menuData, '')}
                 </Menu>
             </Sider>
         )
