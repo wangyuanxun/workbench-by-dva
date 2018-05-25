@@ -7,17 +7,19 @@ import UserHeader from './UserHeader'
 import UsereSider from './UserSider'
 import config from '../../utils/config'
 import { noLayout } from '../../utils/util'
+import { userLogout } from '../../utils/auth'
 
 const { Content } = Layout
 
 class UserLayout extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             collapsed: false
         }
         this.collapsedChange = this.collapsedChange.bind(this);
         this.menuSelectHandle = this.menuSelectHandle.bind(this);
+        this.logout = this.logout.bind(this);
     }
 
     collapsedChange() {
@@ -34,7 +36,13 @@ class UserLayout extends React.Component {
                 parentMenu = menu.find((item) => item.id === menuKey);
             menu = keyArray.length > 0 ? parentMenu.children : parentMenu;
         }
-        menu ? dispatch(routerRedux.push(menu.linkUrl)) : message.error('获取菜单路径失败...');
+        menu ? dispatch(routerRedux.push(menu.linkUrl)) : message.error('获取菜单路径失败');
+    }
+
+    logout() {
+        userLogout();
+        let { dispatch } = this.props;
+        dispatch(routerRedux.push('/account/login'));
     }
 
     render() {
@@ -45,7 +53,7 @@ class UserLayout extends React.Component {
                 <Layout>
                     <UsereSider collapsed={this.state.collapsed} data={menuData} menuSelect={this.menuSelectHandle} />
                     <Layout>
-                        <UserHeader collapsed={this.state.collapsed} collapsedChange={this.collapsedChange} />
+                        <UserHeader collapsed={this.state.collapsed} collapsedChange={this.collapsedChange} logout={this.logout} />
                         <Content>
                             {this.props.children}
                         </Content>

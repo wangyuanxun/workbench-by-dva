@@ -3,6 +3,7 @@ import { notification } from 'antd'
 import fetch from 'dva/fetch'
 import store from '../index'
 import config from './config'
+import { userLogout, getUser } from './auth'
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
@@ -24,8 +25,7 @@ function checkStatus(response) {
 function checkLogin(response) {
   const { dispatch } = store;
   if (response.code === config.logout_code) {
-    localStorage.removeItem('TOKEN');
-    localStorage.removeItem('REAL_NAME');
+    userLogout();
     dispatch(routerRedux.push('/account/login'));
   }
   return response;
@@ -65,14 +65,14 @@ export default function request(url, options) {
       newOption.headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
-        'TOKEN': localStorage.getItem('TOKEN'),
+        'TOKEN': getUser().TOKEN,
         ...newOption.headers
       }
       newOption.body = JSON.stringify(newOption.body);
     } else {
       newOption.headers = {
         Accept: 'application/json',
-        'TOKEN': localStorage.getItem('TOKEN'),
+        'TOKEN': getUser().TOKEN,
         ...newOption.headers
       }
     }

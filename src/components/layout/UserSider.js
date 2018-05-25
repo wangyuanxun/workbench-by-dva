@@ -8,7 +8,7 @@ const { Sider } = Layout
 
 class UserSider extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.menuSelect = this.menuSelect.bind(this);
     }
 

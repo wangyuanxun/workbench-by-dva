@@ -1,26 +1,62 @@
 import React from 'react'
-import { Layout, Icon, Badge, Dropdown, Menu } from 'antd'
+import { Layout, Icon, Badge, Dropdown, Menu, message, Modal } from 'antd'
 import styles from './UserHeader.less'
 import logo from '../../assets/images/logo.svg'
+import { getUser } from '../../utils/auth'
 
 const { Header } = Layout
 
 class UserHeader extends React.Component {
+    constructor(props) {
+        super(props);
+        this.menuClick = this.menuClick.bind(this);
+    }
+
+    menuClick({ key }) {
+        console.log(key === '4');
+        switch (key) {
+            case '1':
+                message.info('设置');
+                break;
+            case '2':
+                message.info('个人中心');
+                break;
+            case '3':
+                message.info('修改密码');
+                break;
+            case '4':
+                let { logout } = this.props;
+                Modal.confirm({
+                    title: '系统提示',
+                    content: '确认退出系统吗?',
+                    okText: '确定退出',
+                    cancelText: '取消',
+                    onOk() {
+                        logout();
+                    }
+                })
+                break;
+            default:
+                message.error('系统出错');
+                break;
+        }
+    }
+
     render() {
-        let realName = localStorage.getItem('REAL_NAME');
+        let realName = getUser().REAL_NAME;
         let menu = (
-            <Menu>
-                <Menu.Item>
+            <Menu onClick={this.menuClick}>
+                <Menu.Item key={1}>
                     <span><Icon type='setting' /><span className={styles.menu_item}>设置</span></span>
                 </Menu.Item>
-                <Menu.Item>
+                <Menu.Item key={2}>
                     <span><Icon type='user' /><span className={styles.menu_item}>个人中心</span></span>
                 </Menu.Item>
-                <Menu.Item>
+                <Menu.Item key={3}>
                     <span><Icon type='edit' /><span className={styles.menu_item}>修改密码</span></span>
                 </Menu.Item>
                 <Menu.Divider />
-                <Menu.Item>
+                <Menu.Item key={4}>
                     <span><Icon type='logout' /><span className={styles.menu_item}>退出登录</span></span>
                 </Menu.Item>
             </Menu>
