@@ -47,7 +47,8 @@ class UserLayout extends React.Component {
 
     render() {
         let { location } = this.props,
-            menuData = this.props.sys.menuData;
+            sys = this.props.sys,
+            menuData = sys.menuData;
         let userLayout = !noLayout(location.pathname) ?
             (
                 <Layout>

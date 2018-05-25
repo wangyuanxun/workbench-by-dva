@@ -27,7 +27,7 @@ export default {
             history.listen(({ pathname }) => {
                 if (!noLayout(pathname)) {
                     dispatch({
-                        type: 'getMenuList',
+                        type: 'getMenuList'
                     });
                 }
             })

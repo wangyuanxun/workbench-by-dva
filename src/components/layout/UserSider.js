@@ -39,14 +39,16 @@ class UserSider extends React.Component {
     }
 
     render() {
-        let menuData = this.props.data;
+        let props = this.props,
+            collapsed = props.collapsed,
+            menuData = props.data;
         return (
-            <Sider trigger={null} collapsible={true} collapsed={this.props.collapsed}>
+            <Sider trigger={null} collapsible={true} collapsed={collapsed}>
                 <div className={styles.logo}>
                     <img src={logo} alt='logo' />
                     <h1>{config.name}</h1>
                 </div>
-                <Menu theme="dark" mode="inline" onSelect={this.menuSelect}>
+                <Menu theme='dark' mode='inline' onSelect={this.menuSelect}>
                     {this.initMenu(menuData, '')}
                 </Menu>
             </Sider>

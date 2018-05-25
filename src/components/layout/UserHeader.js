@@ -13,7 +13,6 @@ class UserHeader extends React.Component {
     }
 
     menuClick({ key }) {
-        console.log(key === '4');
         switch (key) {
             case '1':
                 message.info('设置');
