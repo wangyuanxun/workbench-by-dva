@@ -8,6 +8,7 @@ import UsereSider from './UserSider'
 import config from '../../utils/config'
 import { noLayout } from '../../utils/util'
 import { userLogout } from '../../utils/auth'
+import styles from './UserLayout.less'
 
 const { Content } = Layout
 
@@ -55,7 +56,7 @@ class UserLayout extends React.Component {
                     <UsereSider collapsed={this.state.collapsed} data={menuData} menuSelect={this.menuSelectHandle} />
                     <Layout>
                         <UserHeader collapsed={this.state.collapsed} collapsedChange={this.collapsedChange} logout={this.logout} />
-                        <Content>
+                        <Content className={styles.layout_content}>
                             {this.props.children}
                         </Content>
                     </Layout>
