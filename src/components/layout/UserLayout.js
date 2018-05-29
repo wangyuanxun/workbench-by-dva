@@ -18,18 +18,16 @@ class UserLayout extends React.Component {
         this.state = {
             collapsed: false
         }
-        this.collapsedChange = this.collapsedChange.bind(this);
-        this.menuSelectHandle = this.menuSelectHandle.bind(this);
-        this.logout = this.logout.bind(this);
+        this.onCollapsedChange = this.onCollapsedChange.bind(this);
+        this.onMenuSelect = this.onMenuSelect.bind(this);
+        this.onLogout = this.onLogout.bind(this);
     }
-
-    collapsedChange() {
+    onCollapsedChange() {
         this.setState({ collapsed: !this.state.collapsed });
     }
-
-    menuSelectHandle(key) {
+    onMenuSelect(key) {
         let { dispatch } = this.props,
-            menuData = this.props.sys.menuData,
+            menuData = this.props.layout.menuData,
             keyArray = key.split('_'),
             menu = menuData;
         while (keyArray.length > 0) {
@@ -39,23 +37,21 @@ class UserLayout extends React.Component {
         }
         menu ? dispatch(routerRedux.push(menu.linkUrl)) : message.error('获取菜单路径失败');
     }
-
-    logout() {
+    onLogout() {
         userLogout();
         let { dispatch } = this.props;
         dispatch(routerRedux.push('/account/login'));
     }
-
     render() {
         let { location } = this.props,
-            sys = this.props.sys,
-            menuData = sys.menuData;
+            layout = this.props.layout,
+            menuData = layout.menuData;
         let userLayout = !noLayout(location.pathname) ?
             (
                 <Layout>
-                    <UsereSider collapsed={this.state.collapsed} data={menuData} menuSelect={this.menuSelectHandle} />
+                    <UsereSider collapsed={this.state.collapsed} data={menuData} menuSelect={this.onMenuSelect} />
                     <Layout>
-                        <UserHeader collapsed={this.state.collapsed} collapsedChange={this.collapsedChange} logout={this.logout} />
+                        <UserHeader collapsed={this.state.collapsed} collapsedChange={this.onCollapsedChange} logout={this.onLogout} />
                         <Content className={styles.layout_content}>
                             {this.props.children}
                         </Content>
@@ -75,4 +71,4 @@ class UserLayout extends React.Component {
     }
 }
 
-export default connect(({ sys }) => ({ sys }))(UserLayout)
+export default connect(({ layout }) => ({ layout }))(UserLayout)

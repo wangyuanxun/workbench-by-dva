@@ -9,9 +9,8 @@ const { Sider } = Layout
 class UserSider extends React.Component {
     constructor(props) {
         super(props);
-        this.menuSelect = this.menuSelect.bind(this);
+        this.onMenuSelect = this.onMenuSelect.bind(this);
     }
-
     initMenu(data, parentId) {
         let defaultIcon = 'profile';
         return (
@@ -33,11 +32,9 @@ class UserSider extends React.Component {
             })
         )
     }
-
-    menuSelect({ key }) {
+    onMenuSelect({ key }) {
         this.props.menuSelect(key);
     }
-
     render() {
         let props = this.props,
             collapsed = props.collapsed,
@@ -48,7 +45,7 @@ class UserSider extends React.Component {
                     <img src={logo} alt='logo' />
                     <h1>{config.name}</h1>
                 </div>
-                <Menu theme='dark' mode='inline' onSelect={this.menuSelect}>
+                <Menu theme='dark' mode='inline' onSelect={this.onMenuSelect}>
                     {this.initMenu(menuData, '')}
                 </Menu>
             </Sider>

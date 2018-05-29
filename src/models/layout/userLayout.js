@@ -1,8 +1,9 @@
 import { getMenuList } from '../../services/sys/sys'
 import { message } from 'antd'
+import { noLayout } from '../../utils/util'
 
 export default {
-    namespace: 'sys',
+    namespace: 'layout',
     state: {
         menuData: []
     },
@@ -13,7 +14,7 @@ export default {
     },
     effects: {
         *getMenuList({ payload }, { put, call }) {
-            const response = yield call(getMenuList, payload);
+            const response = yield call(getMenuList);
             if (response.code === 1) {
                 yield put({ type: 'load', payload: response.data || [] });
             } else {
@@ -24,10 +25,9 @@ export default {
     subscriptions: {
         setup({ dispatch, history }) {
             history.listen(({ pathname }) => {
-                if (pathname === '/menu') {
+                if (!noLayout(pathname)) {
                     dispatch({
-                        type: 'getMenuList',
-                        payload: { all: true }
+                        type: 'getMenuList'
                     });
                 }
             })

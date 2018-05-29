@@ -9,10 +9,9 @@ const { Header } = Layout
 class UserHeader extends React.Component {
     constructor(props) {
         super(props);
-        this.menuClick = this.menuClick.bind(this);
+        this.onMenuClick = this.onMenuClick.bind(this);
     }
-
-    menuClick({ key }) {
+    onMenuClick({ key }) {
         switch (key) {
             case '1':
                 message.info('设置');
@@ -40,11 +39,10 @@ class UserHeader extends React.Component {
                 break;
         }
     }
-
     render() {
         let realName = getUser().REAL_NAME;
         let menu = (
-            <Menu onClick={this.menuClick}>
+            <Menu onClick={this.onMenuClick}>
                 <Menu.Item key={1}>
                     <span><Icon type='setting' /><span className={styles.menu_item}>设置</span></span>
                 </Menu.Item>
