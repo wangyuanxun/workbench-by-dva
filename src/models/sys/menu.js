@@ -1,4 +1,4 @@
-import { getMenuList } from '../../services/sys/sys'
+import { getMenuList, menuStateChange } from '../../services/sys/sys'
 import { message } from 'antd'
 
 export default {
@@ -7,15 +7,39 @@ export default {
         menuData: []
     },
     reducers: {
-        load(state, { payload }) {
+        loadMenuList(state, { payload }) {
             return { ...state, menuData: payload };
+        },
+        changeMenuState(state, { payload }) {
+            let id = payload.id,
+                menuState = payload.checked ? 1 : 2,
+                forEachMenuData = (data) => {
+                    data.map((item) => {
+                        if (item.id === id)
+                            item.state = menuState;
+                        if (item.children && item.children.length > 0)
+                            forEachMenuData(item.children);
+                        return item;
+                    })
+                    return data;
+                }
+            let menuData = forEachMenuData(state.menuData);
+            return { ...state, menuData: menuData };
         }
     },
     effects: {
         *getMenuList({ payload }, { put, call }) {
             const response = yield call(getMenuList, payload);
             if (response.code === 1) {
-                yield put({ type: 'load', payload: response.data || [] });
+                yield put({ type: 'loadMenuList', payload: response.data || [] });
+            } else {
+                message.error(response.message);
+            }
+        },
+        *menuStateChange({ payload }, { put, call }) {
+            const response = yield call(menuStateChange, payload);
+            if (response.code === 1) {
+                yield put({ type: 'changeMenuState', payload: payload });
             } else {
                 message.error(response.message);
             }
