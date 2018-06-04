@@ -1,10 +1,11 @@
-import { getMenuList, menuStateChange } from '../../services/sys/sys'
+import { getMenuList, menuStateChange, getParentMenu } from '../../services/sys/sys'
 import { message } from 'antd'
 
 export default {
     namespace: 'sys',
     state: {
-        menuData: []
+        menuData: [],
+        parentMenuData: []
     },
     reducers: {
         loadMenuList(state, { payload }) {
@@ -25,6 +26,9 @@ export default {
                 }
             let menuData = forEachMenuData(state.menuData);
             return { ...state, menuData: menuData };
+        },
+        changeParentMenuData(state, { payload }) {
+            return { ...state, parentMenuData: payload };
         }
     },
     effects: {
@@ -40,6 +44,14 @@ export default {
             const response = yield call(menuStateChange, payload);
             if (response.code === 1) {
                 yield put({ type: 'changeMenuState', payload: payload });
+            } else {
+                message.error(response.message);
+            }
+        },
+        *getParentMenu({ payload }, { put, call }) {
+            const response = yield call(getParentMenu);
+            if (response.code === 1) {
+                yield put({ type: 'changeParentMenuData', payload: response.data || [] });
             } else {
                 message.error(response.message);
             }

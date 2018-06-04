@@ -1,8 +1,11 @@
 import React from 'react'
 import { connect } from 'dva'
-import { Card, Table, Button, Switch, Modal } from 'antd'
+import { Card, Table, Button, Switch, Modal, Form, Row, Col, Input, Select } from 'antd'
 import styles from './Menu.less'
 import '../../assets/styles/icon.less'
+
+const FormItem = Form.Item
+const Option = Select.Option
 
 class Menu extends React.Component {
     constructor(props) {
@@ -44,29 +47,49 @@ class Menu extends React.Component {
     onReLoad() {
 
     }
+    // 加载一级菜单
+    loadParentMenu() {
+        this.props.dispatch({
+            type: 'sys/getParentMenu'
+        })
+    }
     // 新增
     onAdd() {
         this.setState({ modalTitle: '菜单添加', modalOkText: '确认添加', modalVisible: true });
+        this.loadParentMenu();
     }
     // 编辑
     onEdit() {
         this.setState({ modalTitle: '菜单编辑', modalOkText: '确认编辑', modalVisible: true });
+        this.loadParentMenu();
     }
     // 删除
     onDel() {
+        let dispatch = this.props.dispatch;
         Modal.confirm({
             title: '系统提示',
             content: '确认删除选中行吗?',
             okText: '确定删除',
             cancelText: '取消',
             onOk: () => {
-
+                dispatch({
+                    type: 'sys/delMenu',
+                    payload: { ids: '' }
+                })
             }
         })
     }
     // modal提交
     modalOk() {
-
+        this.props.form.validateFields((err, value) => {
+            if (!err) {
+                console.log(value)
+                this.props.dispatch({
+                    type: 'sys/addMenu',
+                    payload: { ...value }
+                })
+            }
+        })
     }
     // modal取消
     modalCancel() {
@@ -74,7 +97,9 @@ class Menu extends React.Component {
     }
     render() {
         let props = this.props,
-            menuData = props.sys.menuData;
+            menuData = props.sys.menuData,
+            parentMenuData = props.sys.parentMenuData,
+            { getFieldDecorator } = props.form;
         let rowKey = (record) => (record.id);
         let rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
@@ -128,6 +153,18 @@ class Menu extends React.Component {
                     )
             }
         ]
+        let modalFormColLayout = {
+            span: 12
+        }
+        let modalFormItemLayout = {
+            labelCol: {
+                span: 8
+            },
+            wrapperCol: {
+                span: 16
+            }
+        }
+        let parentMenuOptions = parentMenuData.map(item => <Option key={item.id} value={item.id}>{item.menuName}</Option>)
         return (
             <Card bordered={false}>
                 <div className={styles.tool_box}>
@@ -150,21 +187,87 @@ class Menu extends React.Component {
                     expandedRowKeys={this.state.expandedRowKeys}
                     onExpandedRowsChange={this.onExpandedRowsChange} />
                 <Modal
+                    width='800px'
+                    destroyOnClose={true}
                     title={this.state.modalTitle}
                     visible={this.state.modalVisible}
                     okText={this.state.modalOkText}
                     cancelText='关闭'
-                    closable={false}
                     onOk={this.modalOk}
                     onCancel={this.modalCancel}>
-
+                    <Form>
+                        {
+                            getFieldDecorator('id', {
+                                initialValue: 0
+                            })(<Input type='hidden' placeholder='菜单编号' />)
+                        }
+                        <Row>
+                            <Col {...modalFormColLayout}>
+                                <FormItem label='所属菜单' {...modalFormItemLayout}>
+                                    {
+                                        getFieldDecorator('menuName', {
+                                            rules: [{ required: true, message: '请输入菜单名称' }]
+                                        })(<Input placeholder='菜单名称' />)
+                                    }
+                                </FormItem>
+                            </Col>
+                            <Col {...modalFormColLayout}>
+                                <FormItem label='所属菜单' {...modalFormItemLayout}>
+                                    {
+                                        getFieldDecorator('parentId', {
+                                            initialValue: 0
+                                        })(
+                                            <Select>
+                                                <Option key={0} value={0}>请选择</Option>
+                                                {parentMenuOptions}
+                                            </Select>
+                                        )
+                                    }
+                                </FormItem>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col {...modalFormColLayout}>
+                                <FormItem label='链接地址' {...modalFormItemLayout}>
+                                    {
+                                        getFieldDecorator('linkUrl', {
+                                            initialValue: ''
+                                        })(<Input placeholder='链接地址' />)
+                                    }
+                                </FormItem>
+                            </Col>
+                            <Col {...modalFormColLayout}>
+                                <FormItem label='菜单图标' {...modalFormItemLayout}>
+                                </FormItem>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col {...modalFormColLayout}>
+                                <FormItem label='状态' {...modalFormItemLayout}>
+                                    {
+                                        getFieldDecorator('state', {
+                                            initialValue: 1
+                                        })(
+                                            <Select>
+                                                <Option value={1}>启用</Option>
+                                                <Option value={2}>禁用</Option>
+                                            </Select>
+                                        )
+                                    }
+                                </FormItem>
+                            </Col>
+                        </Row>
+                    </Form>
                 </Modal>
-            </Card>
+            </Card >
         )
     }
     componentWillReceiveProps() {
+        // 展开菜单
         this.onExpandedAllRows();
     }
 }
 
-export default connect((sys) => (sys))(Menu)
+const MenuForm = Form.create()(Menu);
+
+export default connect((sys) => (sys))(MenuForm)

@@ -6,6 +6,8 @@ import styles from './Login.less'
 import logo from '../../assets/images/logo.svg'
 import config from '../../utils/config'
 
+const FormItem = Form.Item
+
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -45,26 +47,26 @@ class Login extends React.Component {
                     </div>
                     <div className={styles.main}>
                         <Form onSubmit={this.onSubmit}>
-                            <Form.Item>
-                                {getFieldDecorator('username', {
-                                    rules: [{ required: true, message: '请输入登录帐号' }]
-                                })(
-                                    <Input prefix={<Icon type='user' />} size='large' placeholder='登录帐号' />
-                                )}
-                            </Form.Item>
-                            <Form.Item>
-                                {getFieldDecorator('pwd', {
-                                    rules: [{ required: true, message: '请输入登录密码' }]
-                                })(
-                                    <Input type="password" prefix={<Icon type='lock' />} size='large' placeholder='登录密码' />
-                                )}
-                            </Form.Item>
-                            <Form.Item>
+                            <FormItem>
+                                {
+                                    getFieldDecorator('username', {
+                                        rules: [{ required: true, message: '请输入登录帐号' }]
+                                    })(<Input prefix={<Icon type='user' />} size='large' placeholder='登录帐号' />)
+                                }
+                            </FormItem>
+                            <FormItem>
+                                {
+                                    getFieldDecorator('pwd', {
+                                        rules: [{ required: true, message: '请输入登录密码' }]
+                                    })(<Input type="password" prefix={<Icon type='lock' />} size='large' placeholder='登录密码' />)
+                                }
+                            </FormItem>
+                            <FormItem>
                                 <Checkbox checked={this.state.remember} onChange={this.onRememberChange}>记住密码</Checkbox>
-                            </Form.Item>
-                            <Form.Item>
+                            </FormItem>
+                            <FormItem>
                                 <Button type='primary' htmlType='submit' size='large' className={styles.submit}>登录</Button>
-                            </Form.Item>
+                            </FormItem>
                         </Form>
                     </div>
                 </div>
