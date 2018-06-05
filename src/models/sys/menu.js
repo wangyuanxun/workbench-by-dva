@@ -1,11 +1,13 @@
-import { getMenuList, menuStateChange, getParentMenu } from '../../services/sys/sys'
+import { getMenuList, menuStateChange, getParentMenu, addOrUpdateMenu, delMenu, loadMenu } from '../../services/sys/sys'
 import { message } from 'antd'
 
 export default {
     namespace: 'sys',
     state: {
         menuData: [],
-        parentMenuData: []
+        parentMenuData: [],
+        visibleModal: false,
+        sysMenu: null
     },
     reducers: {
         loadMenuList(state, { payload }) {
@@ -29,6 +31,16 @@ export default {
         },
         changeParentMenuData(state, { payload }) {
             return { ...state, parentMenuData: payload };
+        },
+        visibleModal(state) {
+            return { ...state, visibleModal: true };
+        },
+        invisibleModal(state) {
+            return { ...state, visibleModal: false };
+        },
+        loadSysMenu(state, { payload }) {
+            console.log(payload)
+            return { ...state, sysMenu: payload };
         }
     },
     effects: {
@@ -52,6 +64,33 @@ export default {
             const response = yield call(getParentMenu);
             if (response.code === 1) {
                 yield put({ type: 'changeParentMenuData', payload: response.data || [] });
+            } else {
+                message.error(response.message);
+            }
+        },
+        *addOrUpdateMenu({ payload }, { put, call }) {
+            const response = yield call(addOrUpdateMenu, payload);
+            if (response.code === 1) {
+                yield put({ type: 'invisibleModal' });
+                yield put({ type: 'getMenuList', payload: { all: true } });
+                message.info(response.message);
+            } else {
+                message.error(response.message);
+            }
+        },
+        *delMenu({ payload }, { put, call }) {
+            const response = yield call(delMenu, payload);
+            if (response.code === 1) {
+                yield put({ type: 'getMenuList', payload: { all: true } });
+                message.info(response.message);
+            } else {
+                message.error(response.message);
+            }
+        },
+        *loadMenu({ payload }, { put, call }) {
+            const response = yield call(loadMenu, payload);
+            if (response.code === 1) {
+                yield put({ type: 'loadSysMenu', payload: response.data });
             } else {
                 message.error(response.message);
             }

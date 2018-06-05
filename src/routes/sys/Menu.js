@@ -11,12 +11,10 @@ class Menu extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            canEdit: true,
-            canDel: true,
             expandedRowKeys: [],
+            selectedRowKeys: [],
             modalTitle: '',
-            modalOkText: '',
-            modalVisible: false
+            modalOkText: ''
         }
         this.onExpandedRowsChange = this.onExpandedRowsChange.bind(this);
         this.onExpandedAllRows = this.onExpandedAllRows.bind(this);
@@ -26,8 +24,9 @@ class Menu extends React.Component {
         this.onEdit = this.onEdit.bind(this);
         this.onDel = this.onDel.bind(this);
         this.modalOk = this.modalOk.bind(this);
-        this.modalCancel = this.modalCancel.bind(this);
+        this.invisibleModal = this.invisibleModal.bind(this);
     }
+    // 行展开变化事件
     onExpandedRowsChange(expandedRows) {
         this.setState({ expandedRowKeys: expandedRows })
     }
@@ -45,7 +44,22 @@ class Menu extends React.Component {
     }
     // 刷新
     onReLoad() {
-
+        this.props.dispatch({
+            type: 'sys/getMenuList',
+            payload: { all: true }
+        })
+    }
+    // 显示modal
+    visibleModal() {
+        this.props.dispatch({
+            type: 'sys/visibleModal'
+        })
+    }
+    // 隐藏modal
+    invisibleModal() {
+        this.props.dispatch({
+            type: 'sys/invisibleModal'
+        })
     }
     // 加载一级菜单
     loadParentMenu() {
@@ -55,13 +69,16 @@ class Menu extends React.Component {
     }
     // 新增
     onAdd() {
-        this.setState({ modalTitle: '菜单添加', modalOkText: '确认添加', modalVisible: true });
+        this.setState({ modalTitle: '菜单添加', modalOkText: '确认添加' });
+        this.visibleModal();
         this.loadParentMenu();
     }
     // 编辑
     onEdit() {
-        this.setState({ modalTitle: '菜单编辑', modalOkText: '确认编辑', modalVisible: true });
+        this.setState({ modalTitle: '菜单编辑', modalOkText: '确认编辑' });
+        this.visibleModal();
         this.loadParentMenu();
+        this.props.dispatch({ type: 'sys/loadMenu', payload: { id: this.state.selectedRowKeys[0] } })
     }
     // 删除
     onDel() {
@@ -74,8 +91,9 @@ class Menu extends React.Component {
             onOk: () => {
                 dispatch({
                     type: 'sys/delMenu',
-                    payload: { ids: '' }
+                    payload: { ids: this.state.selectedRowKeys.join(',') }
                 })
+                this.setState({ selectedRowKeys: [] });
             }
         })
     }
@@ -83,36 +101,24 @@ class Menu extends React.Component {
     modalOk() {
         this.props.form.validateFields((err, value) => {
             if (!err) {
-                console.log(value)
                 this.props.dispatch({
-                    type: 'sys/addMenu',
+                    type: 'sys/addOrUpdateMenu',
                     payload: { ...value }
                 })
             }
         })
     }
-    // modal取消
-    modalCancel() {
-        this.setState({ modalVisible: false });
-    }
     render() {
         let props = this.props,
             menuData = props.sys.menuData,
             parentMenuData = props.sys.parentMenuData,
+            visibleModal = props.sys.visibleModal,
+            sysMenu = props.sys.sysMenu,
             { getFieldDecorator } = props.form;
         let rowKey = (record) => (record.id);
         let rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
-                if (selectedRows.length === 1) {
-                    this.setState({ canEdit: false })
-                } else {
-                    this.setState({ canEdit: true })
-                }
-                if (selectedRows.length >= 1) {
-                    this.setState({ canDel: false })
-                } else {
-                    this.setState({ canDel: true })
-                }
+                this.setState({ selectedRowKeys: selectedRowKeys })
             }
         }
         let columns = [
@@ -173,8 +179,8 @@ class Menu extends React.Component {
                         <Button type='primary' ghost={true} onClick={this.onCollapseAllRows}>收缩所有</Button>
                         <Button type='primary' ghost={true} onClick={this.onReLoad}>刷新</Button>
                         <Button type='primary' ghost={true} onClick={this.onAdd}>新增</Button>
-                        <Button type='primary' ghost={true} disabled={this.state.canEdit} onClick={this.onEdit}>编辑</Button>
-                        <Button type='primary' ghost={true} disabled={this.state.canDel} onClick={this.onDel}>删除</Button>
+                        <Button type='primary' ghost={true} disabled={this.state.selectedRowKeys.length !== 1} onClick={this.onEdit}>编辑</Button>
+                        <Button type='primary' ghost={true} disabled={this.state.selectedRowKeys <= 0} onClick={this.onDel}>删除</Button>
                     </Button.Group>
                 </div>
                 <Table
@@ -190,15 +196,15 @@ class Menu extends React.Component {
                     width='800px'
                     destroyOnClose={true}
                     title={this.state.modalTitle}
-                    visible={this.state.modalVisible}
+                    visible={visibleModal}
                     okText={this.state.modalOkText}
                     cancelText='关闭'
                     onOk={this.modalOk}
-                    onCancel={this.modalCancel}>
+                    onCancel={this.invisibleModal}>
                     <Form>
                         {
                             getFieldDecorator('id', {
-                                initialValue: 0
+                                initialValue: sysMenu ? sysMenu.id : 0
                             })(<Input type='hidden' placeholder='菜单编号' />)
                         }
                         <Row>
@@ -206,6 +212,7 @@ class Menu extends React.Component {
                                 <FormItem label='所属菜单' {...modalFormItemLayout}>
                                     {
                                         getFieldDecorator('menuName', {
+                                            initialValue: sysMenu ? sysMenu.menuName : '',
                                             rules: [{ required: true, message: '请输入菜单名称' }]
                                         })(<Input placeholder='菜单名称' />)
                                     }
@@ -215,7 +222,7 @@ class Menu extends React.Component {
                                 <FormItem label='所属菜单' {...modalFormItemLayout}>
                                     {
                                         getFieldDecorator('parentId', {
-                                            initialValue: 0
+                                            initialValue: sysMenu ? sysMenu.parentId : 0
                                         })(
                                             <Select>
                                                 <Option key={0} value={0}>请选择</Option>
@@ -231,7 +238,7 @@ class Menu extends React.Component {
                                 <FormItem label='链接地址' {...modalFormItemLayout}>
                                     {
                                         getFieldDecorator('linkUrl', {
-                                            initialValue: ''
+                                            initialValue: sysMenu ? sysMenu.linkUrl : ''
                                         })(<Input placeholder='链接地址' />)
                                     }
                                 </FormItem>
@@ -246,7 +253,7 @@ class Menu extends React.Component {
                                 <FormItem label='状态' {...modalFormItemLayout}>
                                     {
                                         getFieldDecorator('state', {
-                                            initialValue: 1
+                                            initialValue: sysMenu ? sysMenu.state : 1
                                         })(
                                             <Select>
                                                 <Option value={1}>启用</Option>
