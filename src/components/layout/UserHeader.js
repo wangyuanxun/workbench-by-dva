@@ -63,7 +63,7 @@ class UserHeader extends React.Component {
                 <Icon className={styles.trigger} type={this.props.collapsed ? 'menu-unfold' : 'menu-fold'} onClick={this.props.collapsedChange} />
                 <div className={styles.right}>
                     <span className={styles.action}>
-                        <Badge count={0} showZero={true}>
+                        <Badge count={0}>
                             <Icon className={styles.icon} type='bell' />
                         </Badge>
                     </span>

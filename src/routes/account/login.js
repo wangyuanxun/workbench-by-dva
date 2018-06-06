@@ -12,8 +12,7 @@ class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            remember: true,
-            loading: false
+            remember: true
         }
         this.onRememberChange = this.onRememberChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -67,7 +66,7 @@ class Login extends React.Component {
                                 <Checkbox checked={this.state.remember} onChange={this.onRememberChange}>记住密码</Checkbox>
                             </FormItem>
                             <FormItem>
-                                <Button type='primary' htmlType='submit' size='large' className={styles.submit}>登录</Button>
+                                <Button type='primary' htmlType='submit' size='large' className={styles.submit} loading={props.loading.models.account}>登录</Button>
                             </FormItem>
                         </Form>
                     </div>
@@ -79,4 +78,4 @@ class Login extends React.Component {
 
 const LoginForm = Form.create()(Login);
 
-export default connect()(LoginForm)
+export default connect((account) => (account))(LoginForm)
