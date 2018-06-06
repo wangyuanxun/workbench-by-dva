@@ -1,8 +1,8 @@
-import { getMenuList, menuStateChange, getParentMenu, addOrUpdateMenu, delMenu, loadMenu } from '../../services/sys/sys'
+import { getMenuList, menuStateChange, getParentMenu, addOrUpdateMenu, delMenu, loadMenu } from '../../services/sys/menu'
 import { message } from 'antd'
 
 export default {
-    namespace: 'sys',
+    namespace: 'menu',
     state: {
         menuData: [],
         parentMenuData: [],
@@ -39,7 +39,6 @@ export default {
             return { ...state, visibleModal: false };
         },
         loadSysMenu(state, { payload }) {
-            console.log(payload)
             return { ...state, sysMenu: payload };
         }
     },

@@ -5,9 +5,7 @@ import './index.less'
 
 // 1. Initialize
 const app = dva({
-    history: createHashHistory({
-        hashType: 'slash'
-    })
+    history: createHashHistory()
 });
 
 // 2. Plugins

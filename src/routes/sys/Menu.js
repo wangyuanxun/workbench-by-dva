@@ -33,7 +33,7 @@ class Menu extends React.Component {
     // 展开所有
     onExpandedAllRows() {
         let props = this.props,
-            menuData = props.sys.menuData,
+            menuData = props.menu.menuData,
             expandedRowKeys = [];
         menuData.forEach((item) => { expandedRowKeys.push(item.id) });
         this.setState({ expandedRowKeys: expandedRowKeys })
@@ -45,26 +45,26 @@ class Menu extends React.Component {
     // 刷新
     onReLoad() {
         this.props.dispatch({
-            type: 'sys/getMenuList',
+            type: 'menu/getMenuList',
             payload: { all: true }
         })
     }
     // 显示modal
     visibleModal() {
         this.props.dispatch({
-            type: 'sys/visibleModal'
+            type: 'menu/visibleModal'
         })
     }
     // 隐藏modal
     invisibleModal() {
         this.props.dispatch({
-            type: 'sys/invisibleModal'
+            type: 'menu/invisibleModal'
         })
     }
     // 加载一级菜单
     loadParentMenu() {
         this.props.dispatch({
-            type: 'sys/getParentMenu'
+            type: 'menu/getParentMenu'
         })
     }
     // 新增
@@ -78,7 +78,7 @@ class Menu extends React.Component {
         this.setState({ modalTitle: '菜单编辑', modalOkText: '确认编辑' });
         this.visibleModal();
         this.loadParentMenu();
-        this.props.dispatch({ type: 'sys/loadMenu', payload: { id: this.state.selectedRowKeys[0] } })
+        this.props.dispatch({ type: 'menu/loadMenu', payload: { id: this.state.selectedRowKeys[0] } })
     }
     // 删除
     onDel() {
@@ -90,7 +90,7 @@ class Menu extends React.Component {
             cancelText: '取消',
             onOk: () => {
                 dispatch({
-                    type: 'sys/delMenu',
+                    type: 'menu/delMenu',
                     payload: { ids: this.state.selectedRowKeys.join(',') }
                 })
                 this.setState({ selectedRowKeys: [] });
@@ -102,7 +102,7 @@ class Menu extends React.Component {
         this.props.form.validateFields((err, value) => {
             if (!err) {
                 this.props.dispatch({
-                    type: 'sys/addOrUpdateMenu',
+                    type: 'menu/addOrUpdateMenu',
                     payload: { ...value }
                 })
             }
@@ -110,10 +110,10 @@ class Menu extends React.Component {
     }
     render() {
         let props = this.props,
-            menuData = props.sys.menuData,
-            parentMenuData = props.sys.parentMenuData,
-            visibleModal = props.sys.visibleModal,
-            sysMenu = props.sys.sysMenu,
+            menuData = props.menu.menuData,
+            parentMenuData = props.menu.parentMenuData,
+            visibleModal = props.menu.visibleModal,
+            sysMenu = props.menu.sysMenu,
             { getFieldDecorator } = props.form;
         let rowKey = (record) => (record.id);
         let rowSelection = {
@@ -139,7 +139,7 @@ class Menu extends React.Component {
                                     okText: '确定' + text,
                                     cancelText: '取消',
                                     onOk: () => {
-                                        this.props.dispatch({ type: 'sys/menuStateChange', payload: { id: record.id, checked: checked } })
+                                        this.props.dispatch({ type: 'menu/menuStateChange', payload: { id: record.id, checked: checked } })
                                     }
                                 })
                             }}
@@ -185,6 +185,7 @@ class Menu extends React.Component {
                 </div>
                 <Table
                     size={'small'}
+                    loading={props.loading.models.menu}
                     rowKey={rowKey}
                     rowSelection={rowSelection}
                     pagination={false}
@@ -194,6 +195,7 @@ class Menu extends React.Component {
                     onExpandedRowsChange={this.onExpandedRowsChange} />
                 <Modal
                     width='800px'
+                    confirmLoading={props.loading.models.menu}
                     destroyOnClose={true}
                     title={this.state.modalTitle}
                     visible={visibleModal}
@@ -277,4 +279,4 @@ class Menu extends React.Component {
 
 const MenuForm = Form.create()(Menu);
 
-export default connect((sys) => (sys))(MenuForm)
+export default connect((menu) => (menu))(MenuForm)

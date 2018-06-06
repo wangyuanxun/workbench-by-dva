@@ -12,7 +12,8 @@ class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            remember: true
+            remember: true,
+            loading: false
         }
         this.onRememberChange = this.onRememberChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -32,7 +33,8 @@ class Login extends React.Component {
         })
     }
     render() {
-        const { getFieldDecorator } = this.props.form;
+        let props = this.props,
+            { getFieldDecorator } = props.form;
         return (
             <div className={styles.container}>
                 <div className={styles.content}>

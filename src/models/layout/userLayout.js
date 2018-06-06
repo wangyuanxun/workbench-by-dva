@@ -1,4 +1,4 @@
-import { getMenuList } from '../../services/sys/sys'
+import { getMenuList } from '../../services/sys/menu'
 import { message } from 'antd'
 import { noLayout } from '../../utils/util'
 
