@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'dva'
 import { Card, Table, Button, Switch, Modal, Form, Row, Col, Input, Select } from 'antd'
 import styles from './Menu.less'
-import '../../assets/styles/icon.less'
+import icons from '../../assets/fonts/iconfont.css'
 
 const FormItem = Form.Item
 const Option = Select.Option
@@ -78,7 +78,8 @@ class Menu extends React.Component {
         this.setState({ modalTitle: '菜单编辑', modalOkText: '确认编辑' });
         this.visibleModal();
         this.loadParentMenu();
-        this.props.dispatch({ type: 'menu/loadMenu', payload: { id: this.state.selectedRowKeys[0] } })
+        let id = this.state.selectedRowKeys[0];
+        this.props.dispatch({ type: 'menu/loadMenu', payload: { id: id } })
     }
     // 删除
     onDel() {
@@ -148,15 +149,28 @@ class Menu extends React.Component {
                 }
             },
             {
-                title: '排序', align: 'center', render: (text, record) =>
-                    (
+                title: '排序', align: 'center', render: (text, record) => {
+                    let moveTop = () => {
+                        this.props.dispatch({ type: 'menu/moveMenu', payload: { id: record.id, type: 'moveTop' } })
+                    }
+                    let moveUp = () => {
+                        this.props.dispatch({ type: 'menu/moveMenu', payload: { id: record.id, type: 'moveUp' } })
+                    }
+                    let moveDown = () => {
+                        this.props.dispatch({ type: 'menu/moveMenu', payload: { id: record.id, type: 'moveDown' } })
+                    }
+                    let moveBottom = () => {
+                        this.props.dispatch({ type: 'menu/moveMenu', payload: { id: record.id, type: 'moveBottom' } })
+                    }
+                    return (
                         <Button.Group>
-                            <Button type='primary' ghost={true} icon='new-to-up'></Button>
-                            <Button type='primary' ghost={true} icon='arrow-up'></Button>
-                            <Button type='primary' ghost={true} icon='arrow-down'></Button>
-                            <Button type='primary' ghost={true} icon='new-to-down'></Button>
+                            <Button type='primary' ghost={true} className={icons.iconButton} onClick={moveTop}><i className={`${icons.iconfont} ${icons.moveTop}`}></i></Button>
+                            <Button type='primary' ghost={true} icon='arrow-up' onClick={moveUp}></Button>
+                            <Button type='primary' ghost={true} icon='arrow-down' onClick={moveDown}></Button>
+                            <Button type='primary' ghost={true} className={icons.iconButton} onClick={moveBottom}><i className={`${icons.iconfont} ${icons.moveBottom}`}></i></Button>
                         </Button.Group>
                     )
+                }
             }
         ]
         let modalFormColLayout = {
@@ -170,7 +184,9 @@ class Menu extends React.Component {
                 span: 16
             }
         }
-        let parentMenuOptions = parentMenuData.map(item => <Option key={item.id} value={item.id}>{item.menuName}</Option>)
+        // 禁用一级菜单
+        let disabledId = this.state.selectedRowKeys.length > 0 ? this.state.selectedRowKeys[0] : 0;
+        let parentMenuOptions = parentMenuData.map(item => <Option key={item.id} value={item.id} disabled={item.id === disabledId}>{item.menuName}</Option>)
         return (
             <Card bordered={false}>
                 <div className={styles.tool_box}>

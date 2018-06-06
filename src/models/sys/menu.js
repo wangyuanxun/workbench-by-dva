@@ -1,4 +1,4 @@
-import { getMenuList, menuStateChange, getParentMenu, addOrUpdateMenu, delMenu, loadMenu } from '../../services/sys/menu'
+import { getMenuList, menuStateChange, getParentMenu, addOrUpdateMenu, delMenu, loadMenu, moveMenu } from '../../services/sys/menu'
 import { message } from 'antd'
 
 export default {
@@ -12,22 +12,6 @@ export default {
     reducers: {
         loadMenuList(state, { payload }) {
             return { ...state, menuData: payload };
-        },
-        changeMenuState(state, { payload }) {
-            let id = payload.id,
-                menuState = payload.checked ? 1 : 2,
-                forEachMenuData = (data) => {
-                    data.map((item) => {
-                        if (item.id === id)
-                            item.state = menuState;
-                        if (item.children && item.children.length > 0)
-                            forEachMenuData(item.children);
-                        return item;
-                    })
-                    return data;
-                }
-            let menuData = forEachMenuData(state.menuData);
-            return { ...state, menuData: menuData };
         },
         changeParentMenuData(state, { payload }) {
             return { ...state, parentMenuData: payload };
@@ -54,7 +38,8 @@ export default {
         *menuStateChange({ payload }, { put, call }) {
             const response = yield call(menuStateChange, payload);
             if (response.code === 1) {
-                yield put({ type: 'changeMenuState', payload: payload });
+                yield put({ type: 'getMenuList', payload: { all: true } });
+                yield put({ type: 'layout/getMenuList' })
             } else {
                 message.error(response.message);
             }
@@ -72,6 +57,7 @@ export default {
             if (response.code === 1) {
                 yield put({ type: 'invisibleModal' });
                 yield put({ type: 'getMenuList', payload: { all: true } });
+                yield put({ type: 'layout/getMenuList' })
                 message.info(response.message);
             } else {
                 message.error(response.message);
@@ -81,6 +67,7 @@ export default {
             const response = yield call(delMenu, payload);
             if (response.code === 1) {
                 yield put({ type: 'getMenuList', payload: { all: true } });
+                yield put({ type: 'layout/getMenuList' })
                 message.info(response.message);
             } else {
                 message.error(response.message);
@@ -90,6 +77,16 @@ export default {
             const response = yield call(loadMenu, payload);
             if (response.code === 1) {
                 yield put({ type: 'loadSysMenu', payload: response.data });
+            } else {
+                message.error(response.message);
+            }
+        },
+        *moveMenu({ payload }, { put, call }) {
+            const response = yield call(moveMenu, payload);
+            if (response.code === 1) {
+                yield put({ type: 'getMenuList', payload: { all: true } });
+                yield put({ type: 'layout/getMenuList' })
+                message.info(response.message);
             } else {
                 message.error(response.message);
             }

@@ -23,3 +23,7 @@ export async function delMenu(params){
 export async function loadMenu(params){
     return request('/manage/api/menu/loadMenu', { body: params })
 }
+
+export async function moveMenu(params){
+    return request('/manage/api/menu/moveMenu', { body: params })
+}
