@@ -5,41 +5,18 @@ import { noLayout } from '../../utils/util'
 export default {
     namespace: 'layout',
     state: {
-        menuData: [],
-        defaultOpenKeys: [],
-        defaultSelectedKeys: []
+        menuData: []
     },
     reducers: {
-        load(state, { payload }) {
-            let { menuData, pathname } = payload;
-            let openKeys = [],
-                selectedKeys = [];
-
-            let getMenuKeys = (data, parentId) => {
-                data.forEach((item) => {
-                    if (item.linkUrl === pathname) {
-                        selectedKeys.length = 0;
-                        selectedKeys.push(parentId + '_' + item.id);
-                        if (parentId !== '') {
-                            openKeys.length = 0;
-                            openKeys.push(parentId);
-                        }
-                    }
-                    if (item.children && item.children.length > 0)
-                        getMenuKeys(item.children, item.id + '');
-                })
-            }
-            getMenuKeys(menuData, '');
-
-            return { ...state, menuData: menuData, defaultOpenKeys: openKeys, defaultSelectedKeys: selectedKeys };
+        loadMenu(state, { payload }) {
+            return { ...state, menuData: payload };
         }
     },
     effects: {
         *getMenuList({ payload }, { put, call }) {
-            let { pathname } = payload;
             const response = yield call(getMenuList);
             if (response.code === 1) {
-                yield put({ type: 'load', payload: { pathname: pathname, menuData: response.data || [] } });
+                yield put({ type: 'loadMenu', payload: response.data || [] });
             } else {
                 message.error(response.message);
             }
@@ -49,7 +26,7 @@ export default {
         setup({ dispatch, history }) {
             history.listen(({ pathname }) => {
                 if (!noLayout(pathname)) {
-                    dispatch({ type: 'getMenuList', payload: { pathname: pathname } });
+                    dispatch({ type: 'getMenuList' });
                 }
             })
         }

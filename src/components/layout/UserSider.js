@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink } from 'dva/router'
+import { Link } from 'dva/router'
 import { Layout, Menu, Icon } from 'antd'
 import config from '../../utils/config'
 import styles from './UserSider.less'
@@ -22,7 +22,7 @@ class UserSider extends React.Component {
                     return (
                         <Menu.Item key={parentId + item.id}>
                             {!parentId && <Icon type={item.menuIcon || defaultIcon} />}
-                            {item.linkUrl ? <NavLink to={item.linkUrl}>{item.menuName}</NavLink> : <span>{item.menuName}</span>}
+                            {item.linkUrl ? <Link to={item.linkUrl}>{item.menuName}</Link> : <span>{item.menuName}</span>}
                         </Menu.Item>
                     )
                 }
@@ -33,17 +33,32 @@ class UserSider extends React.Component {
         let props = this.props,
             collapsed = props.collapsed,
             menuData = props.data,
-            defaultOpenKeys = props.defaultOpenKeys,
-            defaultSelectedKeys = props.defaultSelectedKeys,
-            menuLayout = {
-                theme: 'dark',
-                mode: 'inline',
-                inlineCollapsed: collapsed,
-                onSelect: this.menuSelect,
-                selectedKeys: defaultSelectedKeys
-            };
-        if (!collapsed) {
-            menuLayout = { ...menuLayout, openKeys: defaultOpenKeys }
+            pathname = props.pathname,
+            menuLayout = null,
+            defaultOpenKeys = [],
+            defaultSelectedKeys = [];
+        if (menuData.length > 0) {
+            let getMenuKeys = (data, parentId) => {
+                data.forEach((item) => {
+                    if (item.linkUrl === pathname) {
+                        defaultSelectedKeys.length = 0;
+                        defaultSelectedKeys.push(parentId + '_' + item.id);
+                        if (parentId !== '') {
+                            defaultOpenKeys.length = 0;
+                            defaultOpenKeys.push(parentId);
+                        }
+                    }
+                    if (item.children && item.children.length > 0)
+                        getMenuKeys(item.children, item.id + '');
+                })
+            }
+            getMenuKeys(menuData, '');
+
+            menuLayout = (
+                <Menu theme='dark' mode='inline' inlineCollapsed={collapsed} defaultOpenKeys={defaultOpenKeys} defaultSelectedKeys={defaultSelectedKeys}>
+                    {this.initMenu(menuData, '')}
+                </Menu>
+            )
         }
         return (
             <Sider trigger={null} collapsible={true} collapsed={collapsed}>
@@ -51,9 +66,7 @@ class UserSider extends React.Component {
                     <img src={logo} alt='logo' />
                     <h1>{config.name}</h1>
                 </div>
-                <Menu {...menuLayout}>
-                    {this.initMenu(menuData, '')}
-                </Menu>
+                {menuLayout}
             </Sider>
         )
     }

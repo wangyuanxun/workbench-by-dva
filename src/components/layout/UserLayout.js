@@ -32,9 +32,7 @@ class UserLayout extends React.Component {
     render() {
         let { location } = this.props,
             layout = this.props.layout,
-            menuData = layout.menuData,
-            defaultOpenKeys = layout.defaultOpenKeys,
-            defaultSelectedKeys = layout.defaultSelectedKeys;
+            menuData = layout.menuData;
 
         let userLayout = !noLayout(location.pathname) ?
             (
@@ -42,8 +40,7 @@ class UserLayout extends React.Component {
                     <UsereSider
                         collapsed={this.state.collapsed}
                         data={menuData}
-                        defaultOpenKeys={defaultOpenKeys}
-                        defaultSelectedKeys={defaultSelectedKeys}
+                        pathname={location.pathname}
                     />
                     <Layout>
                         <UserHeader
