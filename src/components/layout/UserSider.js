@@ -38,14 +38,23 @@ class UserSider extends React.Component {
     render() {
         let props = this.props,
             collapsed = props.collapsed,
-            menuData = props.data;
+            menuData = props.data,
+            defaultOpenKeys = props.defaultOpenKeys,
+            defaultSelectedKeys = props.defaultSelectedKeys;
         return (
             <Sider trigger={null} collapsible={true} collapsed={collapsed}>
                 <div className={styles.logo}>
                     <img src={logo} alt='logo' />
                     <h1>{config.name}</h1>
                 </div>
-                <Menu theme='dark' mode='inline' onSelect={this.onMenuSelect}>
+                <Menu
+                    theme='dark'
+                    mode='inline'
+                    inlineCollapsed={collapsed}
+                    onSelect={this.onMenuSelect}
+                    openKeys={defaultOpenKeys}
+                    selectedKeys={defaultSelectedKeys}
+                >
                     {this.initMenu(menuData, '')}
                 </Menu>
             </Sider>
