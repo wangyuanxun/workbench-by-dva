@@ -1,6 +1,6 @@
 import React from 'react'
 import DocumentTitle from 'react-document-title'
-import { Layout, message } from 'antd'
+import { Layout } from 'antd'
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router'
 import UserHeader from './UserHeader'
@@ -19,23 +19,10 @@ class UserLayout extends React.Component {
             collapsed: false
         }
         this.onCollapsedChange = this.onCollapsedChange.bind(this);
-        this.onMenuSelect = this.onMenuSelect.bind(this);
         this.onLogout = this.onLogout.bind(this);
     }
     onCollapsedChange() {
         this.setState({ collapsed: !this.state.collapsed });
-    }
-    onMenuSelect(key) {
-        let { dispatch } = this.props,
-            menuData = this.props.layout.menuData,
-            keyArray = key.split('_'),
-            menu = menuData;
-        while (keyArray.length > 0) {
-            let menuKey = parseInt(keyArray.shift(), 10),
-                parentMenu = menu.find((item) => item.id === menuKey);
-            menu = keyArray.length > 0 ? parentMenu.children : parentMenu;
-        }
-        menu ? dispatch(routerRedux.push(menu.linkUrl)) : message.error('获取菜单路径失败');
     }
     onLogout() {
         userLogout();
@@ -55,7 +42,6 @@ class UserLayout extends React.Component {
                     <UsereSider
                         collapsed={this.state.collapsed}
                         data={menuData}
-                        menuSelect={this.onMenuSelect}
                         defaultOpenKeys={defaultOpenKeys}
                         defaultSelectedKeys={defaultSelectedKeys}
                     />
